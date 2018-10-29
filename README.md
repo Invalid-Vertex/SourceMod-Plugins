@@ -1,1 +1,1 @@
-SourceMod plugins I've created over the years
+Various SourceMod plugins I've created over the years.
