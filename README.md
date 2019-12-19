@@ -1,1 +1,3 @@
 Various SourceMod plugins I've created over the years.
+Keep in mind these are considered in their final release state,
+I most likely won't be updating them unless somthing major breaks...
