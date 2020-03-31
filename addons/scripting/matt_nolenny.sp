@@ -66,9 +66,9 @@ public Action:OnClientSayCommand(client, const String:command[], const String:sA
 			}
 			case 2:
 			{
-				if(GetEngineVersion() == Engine_TF2)
+				if (IsClientInGame(client) && IsPlayerAlive(client) && bOnCooldown[client] == false)
 				{
-					if (IsClientInGame(client) && IsPlayerAlive(client) && bOnCooldown[client] == false)
+					if(GetEngineVersion() == Engine_TF2)
 					{
 						m_flVel[2] = 750.0;
 						bOnCooldown[client] = true;
@@ -77,16 +77,13 @@ public Action:OnClientSayCommand(client, const String:command[], const String:sA
 						EmitSoundToClient(client, "vo/demoman_sf13_influx_big01.mp3"); //"OH BLOODY EPIC!"
 						SetEntPropFloat(client, Prop_Data, "m_flGravity", -0.1);
 						TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, m_flVel);
-						CreateTimer(2.0, Expl, client);
 						CreateTimer(GetConVarFloat(LennyCooldown), Cooldown, client);
+						CreateTimer(2.0, Expl, client);
 					}
-				}
-				else
-				{
-					if (IsClientInGame(client) && IsPlayerAlive(client))
+					else
 					{
 						PrintToChat(client, "\x04[NoLenny]\x01 | Don't do that...");
-						SlapPlayer(client,10,true);
+						SlapPlayer(client,25,true);
 					}
 				}
 			}
