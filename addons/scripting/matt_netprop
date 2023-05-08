@@ -10,7 +10,7 @@
 public Plugin myinfo =
 {
 	name = "Netprop Manipulation",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Allows for the changing of netprops on entities",
 	version = PLUGIN_VERSION,
 	url = "https://invalidvertex.com"
