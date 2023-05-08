@@ -9,7 +9,7 @@ new String:iClass[][10] = {{"civilian"},{"scout"},{"sniper"},{"soldier"},{"demom
 public Plugin:myinfo =
 {
 	name = "Set Class",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Allows you to set your class",
 	version = "1.0.0",
 	url = "https://invalidvertex.com"
