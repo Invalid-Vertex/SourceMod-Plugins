@@ -4,6 +4,19 @@
 #include <sourcemod>
 #include <sdktools>
 
+#define PLUGIN_VERSION "1.0.0"
+
+
+public Plugin myinfo =
+{
+	name = "Netprop Manipulation",
+	author = "Matt",
+	description = "Allows for the changing of netprops on entities",
+	version = PLUGIN_VERSION,
+	url = "https://invalidvertex.com"
+};
+
+
 public void OnPluginStart()
 {
 	RegAdminCmd("sm_setprop", SetNetPropWrapper, ADMFLAG_ROOT);
