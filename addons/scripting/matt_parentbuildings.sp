@@ -6,16 +6,16 @@
 	
 public Plugin:myinfo =
 {
-   name = "Buildable Parenting",
-   author = "Matt",
-   description = "Allows buildable objects to parent with moving entities",
-   version = PLUGIN_VERSION,
-   url = "https://www.invalidvertex.com"
+	name = "Buildable Parenting",
+	author = "InvalidVertex",
+	description = "Allows buildable objects to parent with moving entities",
+	version = PLUGIN_VERSION,
+	url = "https://www.invalidvertex.com"
 } 
 
 public OnPluginStart()
 {
-   HookEvent("player_builtobject", ObjectBuilt);
+	   HookEvent("player_builtobject", ObjectBuilt);
 }
 
 public OnEntityCreated(entity, const char[] classname)
