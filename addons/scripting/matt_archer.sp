@@ -9,7 +9,7 @@
 public Plugin:myinfo =
 {
 	name = "Archer Spawn",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Allows spawning of bot_npc_archer",
 	version = PLUGIN_VERSION,
 	url = "https://invalidvertex.com"
