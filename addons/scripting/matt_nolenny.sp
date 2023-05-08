@@ -17,7 +17,7 @@ new Handle:LennyCooldown; //How long to wait before the explosion effect can be 
 public Plugin:myinfo =
 {
 	name = "No Lenny Faces",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Blocks most Lenny faces",
 	version = PLUGIN_VERSION,
 	url = "https://invalidvertex.com"
