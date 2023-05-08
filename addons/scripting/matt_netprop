@@ -1,0 +1,146 @@
+#pragma semicolon 1
+#pragma newdecls required
+
+#include <sourcemod>
+#include <sdktools>
+
+public void OnPluginStart()
+{
+	RegAdminCmd("sm_setprop", SetNetPropWrapper, ADMFLAG_ROOT);
+	RegAdminCmd("sm_getindexes", PrintIndexes, ADMFLAG_ROOT);
+}
+
+public Action SetNetPropWrapper(int client, int args)
+{
+	char entity[128];
+	char np_prop[64];
+	char np_type[8];	//types: int, flt, str, vec, ent
+	char np_mode[8];
+	char np_value[128];
+	
+	if (args < 5)
+	{
+		ReplyToCommand(client, "--------------------Arguments--------------------\n'int/string entid|targetname|classname'\n'string type int|flt|str|vec|ent\tNotes: Use '?' to autoassume type (DANGEROUS!), vec uses '|' as a delimiter'\n'int proptype 0 = Prop_Send | 1 = Prop_Data'\n'string netprop'\n'int/float/string value'\n--------------------------------------------------");
+		return Plugin_Handled;
+	}
+	else
+	{
+		GetCmdArg(1, entity, sizeof(entity));
+		GetCmdArg(2, np_type, sizeof(np_type));
+		GetCmdArg(3, np_mode, sizeof(np_mode));	
+		GetCmdArg(4, np_prop, sizeof(np_prop));
+		GetCmdArg(5, np_value, sizeof(np_value));
+
+		for(int entid = 1 ; entid < GetMaxEntities() ; entid++)
+		{
+			if(IsValidEntity(entid))
+			{
+				char index[2048];
+				char classname[128];
+				char targetname[256];
+				IntToString(entid, index, sizeof(index));
+				GetEntityClassname(entid, classname, sizeof(classname));
+				GetEntPropString(entid, Prop_Data, "m_iName", targetname, sizeof(targetname));
+				if(StrEqual(index, entity, false) || StrEqual(targetname, entity, false) || StrEqual(classname, entity, false))
+				{
+					if(HasEntProp(entid, view_as<PropType>(StringToInt(np_mode)), np_prop) == true)
+					{
+						if(StrEqual(np_type,"int",false) || StrEqual(np_type,"?",false) && (StrContains(np_prop, "m_i") == 0 || StrContains(np_prop, "m_n") == 0 || StrContains(np_prop, "m_b") == 0))
+						{
+							SetEntProp(entid, view_as<PropType>(StringToInt(np_mode)), np_prop, StringToInt(np_value));
+						}
+						else if(StrEqual(np_type,"flt",false) || StrEqual(np_type,"?",false) && (StrContains(np_prop, "m_fl") == 0))
+						{
+							SetEntPropFloat(entid, view_as<PropType>(StringToInt(np_mode)), np_prop, StringToFloat(np_value));
+						}
+						else if(StrEqual(np_type,"str",false) || StrEqual(np_type,"?",false) && (StrContains(np_prop, "m_sz") == 0))
+						{
+							SetEntPropString(entid, view_as<PropType>(StringToInt(np_mode)), np_prop, view_as<char>(np_value));
+						}
+						else if(StrEqual(np_type,"vec",false) || StrEqual(np_type,"?",false) && (StrContains(np_prop, "m_vec") == 0) || StrContains(np_prop, "m_ang") == 0)
+						{
+							char num[64][3];
+							float vec[3];
+							ExplodeString(np_value, "|", num, 3, sizeof(num), false);
+							vec[0] = StringToFloat(num[0]);
+							vec[1] = StringToFloat(num[1]);
+							vec[2] = StringToFloat(num[2]);
+							SetEntPropVector(entid, view_as<PropType>(StringToInt(np_mode)), np_prop, vec);
+						}
+						else if(StrEqual(np_type,"ent",false) || StrEqual(np_type,"?",false) && (StrContains(np_prop, "m_h") == 0))
+						{
+							for(int target_entid = 1 ; target_entid < GetMaxEntities() ; target_entid++)
+							{
+								if(IsValidEntity(target_entid))
+								{
+									char targetent_targetname[256];
+									GetEntPropString(target_entid, Prop_Data, "m_iName", targetent_targetname, sizeof(targetent_targetname));
+									if(StrEqual(targetname, entity, false))
+									{
+										SetEntPropEnt(entid, view_as<PropType>(StringToInt(np_mode)), np_prop, target_entid);
+										break;
+									}
+								}
+							}
+						}
+						if(bHasTargetName(targetname))
+							ReplyToCommand(client, "[SM] Netprop | '%s' set on entity '%i|%s [%s]' with a value of '%s'",np_prop,entid,classname,targetname,np_value);
+						else
+							ReplyToCommand(client, "[SM] Netprop | '%s' set on entity '%i|%s' with a value of '%s'",np_prop,entid,classname,np_value);
+					}
+					else
+					{
+						ReplyToCommand(client, "[SM] Netprop | ERROR! Seems the netprop %s doesn't exist on this entity, or the PropType is wrong", np_prop);
+					}
+				}
+			}
+		}	
+	}
+	return Plugin_Handled;
+}
+
+public Action PrintIndexes(int client, int args)
+{
+		int ent = -1;
+		ReplyToCommand(client, "--------------------------------------------------");
+		ReplyToCommand(client, "-----Players-----");
+		while ((ent = FindEntityByClassname(ent, "player")) != INVALID_ENT_REFERENCE)
+		{
+			char targetname[256];
+			GetEntPropString(ent, Prop_Data, "m_iName", targetname, sizeof(targetname));
+			if (ent == client)
+				ReplyToCommand(client, "\tPlayer Target Name: %s | EntIndex: %i\t(You)", targetname, ent);
+			else
+				ReplyToCommand(client, "\tPlayer Target Name: %s | EntIndex: %i", targetname, ent);
+		}
+		ReplyToCommand(client, "-----Hats-----");
+		while ((ent = FindEntityByClassname(ent, "tf_wearable")) != INVALID_ENT_REFERENCE)
+		{
+			int owner = GetEntPropEnt(ent, Prop_Send, "m_hOwnerEntity");
+			if (owner == client)
+			{
+				int index = GetEntProp(ent, Prop_Send, "m_iItemDefinitionIndex");
+				ReplyToCommand(client, "\tiItemDefinitionIndex: %i | EntIndex: %i", index, ent);
+			}
+		}
+		ReplyToCommand(client, "-----Weapons-----");
+		while ((ent = FindEntityByClassname(ent, "tf_weapon_*")) != INVALID_ENT_REFERENCE)
+		{
+			int owner = GetEntPropEnt(ent, Prop_Send, "m_hOwnerEntity");
+			if (owner == client)
+			{
+				int index = GetEntProp(ent, Prop_Send, "m_iItemDefinitionIndex");
+				ReplyToCommand(client, "\tiItemDefinitionIndex: %i | EntIndex: %i", index, ent);
+			}
+		}
+		ReplyToCommand(client, "--------------------------------------------------\n");
+		return Plugin_Handled;
+}
+
+stock bool bHasTargetName(const char[] targetname)
+{
+	if(strlen(targetname) > 0)
+		return true;
+	else
+		return false;
+}
