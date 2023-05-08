@@ -9,7 +9,7 @@
 public Plugin:myinfo =
 {
 	name = "Spawn Annotations",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Allows spawning of training_annotation entities with custom text",
 	version = PLUGIN_VERSION,
 	url = "https://invalidvertex.com"
