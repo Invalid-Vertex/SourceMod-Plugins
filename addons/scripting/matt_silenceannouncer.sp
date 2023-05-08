@@ -7,7 +7,7 @@ new String:mapname[128];
 public Plugin:myinfo = 
 {
 	name = "Remove Announcer spam",
-	author = "Matt",
+	author = "InvalidVertex",
 	description = "Removes the announcer on achievement maps.",
 	version = "1.0.0",
 	url = "https://invalidvertex.com"
