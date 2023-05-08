@@ -3,7 +3,18 @@
 #include <sdktools>
 #include <sdkhooks>
 
-#define PLUGIN_VERSION "1.0.0"
+#define PLUGIN_VERSION "1.1.0"
+
+
+public Plugin:myinfo =
+{
+	name = "Spawn Annotations",
+	author = "Matt",
+	description = "Allows spawning of training_annotation entities with custom text",
+	version = PLUGIN_VERSION,
+	url = "https://invalidvertex.com"
+};
+
 
 public OnPluginStart()
 {
@@ -17,10 +28,10 @@ public Action:CreateAnnotation(client, args)
 	{
 		if (args >= 2)
 		{
-			decl Float:vEyeOri[3], Float:vEyeAng[3], Float:vPos[3];
-			GetClientEyePosition(client, vEyeOri);
+			decl Float:vEyePos[3], Float:vEyeAng[3], Float:vPos[3];
+			GetClientEyePosition(client, vEyePos);
 			GetClientEyeAngles(client, vEyeAng);
-			new Handle:trace = TR_TraceRayFilterEx(vEyeOri, vEyeAng, MASK_SOLID, RayType_Infinite, FilterPlayers);
+			new Handle:trace = TR_TraceRayFilterEx(vEyePos, vEyeAng, MASK_SOLID, RayType_Infinite, FilterPlayers);
 			TR_GetEndPosition(vPos, trace);
 			if(TR_DidHit(trace))
 			{
@@ -33,7 +44,7 @@ public Action:CreateAnnotation(client, args)
 				SetEntPropString(Anno, Prop_Data, "m_iName", buffer);
 				SetEntPropVector(Anno, Prop_Data, "m_vecOrigin", vPos);
 				SetEntPropVector(Anno, Prop_Data, "m_vecAbsOrigin", vPos);
-				if(StringToFloat(flLifetime) > 0 && StringToFloat(flLifetime) < 33) //This is here to prevent people from doing stupid things like -1 or 999
+				if(StringToFloat(flLifetime) > 0 && StringToFloat(flLifetime) < 33) //This is here to prevent people from doing things like -1 or 999999999
 				{
 					flLifetime = flLifetime;
 				}
